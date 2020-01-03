@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  ### PHP-FPM ##############################################
+  php-fpm:
+    hostname: ${DOCKER_PROJECT_NAME}_php-fpm
+    image: registry.webcd.fr/siligon-valley/docker/php-fpm-library:7.3
+    extra_hosts:
+      - "gitlab.webcd.fr:172.16.0.66"
+    volumes:
+      - ./:/var/www
+      - ~/.composer:/root/.composer
+      - ~/.ssh/id_rsa:/root/.ssh/id_rsa
+    networks:
+      - default
+
+  ### Apache Server ########################################
+  # apache:
+  #   image: registry.webcd.fr/siligon-valley/docker/apache:2.4
+  #   volumes:
+  #     - ./:/var/www
+  #   environment:
+  #    - VIRTUAL_HOST=${DOCKER_PROJECT_NAME}.localhost
+  #    - PHP_SERVER=${DOCKER_PROJECT_NAME}_php-fpm
+  #   depends_on:
+  #    - php-fpm
+  #  networks:
+  #    - default
+  #    - proxy
+
+  ### Ngnix Server ########################################
+  nginx:
+    image: registry.webcd.fr/siligon-valley/docker/nginx:1.10.3-public
+    volumes:
+      - ./:/var/www
+     # - .cloud/docker/nginx/default:/etc/nginx/sites-available/default
+    environment:
+      - VIRTUAL_HOST=${DOCKER_PROJECT_NAME}.localhost
+    depends_on:
+      - php-fpm
+    networks:
+      - default
+      - proxy
+
+  ### MariaDB ##############################################
+  db:
+    hostname: ${DB_HOST}
+    image: mariadb:10.1.38
+    env_file: .env
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - .cloud/docker/mysql-init:/docker-entrypoint-initdb.d
+    environment:
+      #- MYSQL_DATABASE=${DB_COMMON_DATABASE
+      #- MYSQL_USER=${DB_COMMON_USERNAME}
+      #- MYSQL_PASSWORD=${DB_COMMON_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DOCKER_DB_ROOT_PASSWORD}
+    networks:
+      - default
+
+  ### phpMyAdmin ###########################################
+  pma:
+    image: phpmyadmin/phpmyadmin:4.9
+    environment:
+      - VIRTUAL_HOST=pma-${DOCKER_PROJECT_NAME}.localhost
+      - PMA_HOST=${DB_HOST}
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    restart: always
+    networks:
+      - default
+      - proxy
+    links:
+      - db:${DB_HOST}
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  mysql-data:

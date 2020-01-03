@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+/**
+* Arguments
+* [0] => bin/console
+* [1] => /status
+* [2] => GET
+* [3] => event=true
+*/
+
+if(!isset($argv[1])){
+    echo "WARNING :  The path of the call is missing\n";
+    exit();
+}
+
+//Add argument
+array_push($argv, "GET", "event=true");
+
+require "public/index.php";

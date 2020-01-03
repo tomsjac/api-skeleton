@@ -1,0 +1,59 @@
+#!/usr/bin/env php
+<?php
+/**
+ * Launch Cron API
+ * System boot and launch of Slim
+ * Over here requests
+ *
+ * @author : Thomas
+ * @version : 1.0.0
+ */
+/**
+ * If it's a cron server
+ */
+if (filter_has_var(INPUT_SERVER, "SERVER_NAME") === true) {
+    return false;
+}
+
+/**
+ * Add bootstrap File
+ */
+require_once __DIR__ . '/../bootstrap/bootstrap.php';
+
+/**
+ * Generate Env at CLI
+ */
+$pathInfo = implode('/', $argv);
+$env = \Slim\Http\Environment::mock(['REQUEST_URI' => '/' . $pathInfo]);
+
+/**
+ * INIT SLIM
+ */
+$settings = require __DIR__ . '/../bootstrap/bootSettings.php';
+//Add execption for Cron, Not
+$settings['settings']['jwt']['ignore'] = ["/cron", "/bin/cron"];
+$settings['environment'] = $env;
+$app = new \Slim\App($settings);
+
+/**
+ * Add Services File
+ */
+require __DIR__ . '/../bootstrap/bootServices.php';
+
+/**
+ * Route With Cron
+ */
+array_shift($argv); // Discard the filename
+$action = array_shift($argv);
+
+if (isset($action) && method_exists(new \App\controller\cron\CronJob($app->getContainer()), $action)) {
+    $app->any('/[{path:.*}]', \App\controller\cron\CronJob::class . ':' . $action);
+} else {
+    $app->any('/[{path:.*}]', \App\controller\cron\CronJob::class . ':index');
+}
+
+/**
+ * RUN, Go !
+ */
+$app->run();
+

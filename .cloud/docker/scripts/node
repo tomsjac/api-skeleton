@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ $(uname -r) == *"Microsoft"* ]]; then
+  #echo Node Windows
+  docker run --rm -ti -w /var/www -v ${PWD/\/mnt/''}:/var/www node:8.11 node $@
+else
+  #echo Node Linux
+  docker run --rm -ti -w /var/www -v $(pwd):/var/www node:8.11 node $@
+fi

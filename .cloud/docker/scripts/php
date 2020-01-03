@@ -1,0 +1,2 @@
+#!/bin/bash
+source .env;docker exec -ti ${DOCKER_PROJECT_NAME}_php-fpm_1 php $@

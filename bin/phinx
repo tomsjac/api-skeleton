@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+<?php
+/**
+ * ShortCut Link Console
+ */
+
+/**
+ * Inject Argument Config
+ */
+array_push($_SERVER['argv'], '-c', 'db/phinx.php');
+
+if (!in_array($_SERVER['argv'][1], ['create'])) {
+    array_push($_SERVER['argv'], '-e', 'default');
+}
+
+/**
+ * Include Phinx Console In Vendor
+ */
+require dirname(__DIR__).'/vendor/bin/phinx';

@@ -1,0 +1,13 @@
+# User specific & automatically generated files #
+#################################################
+/donnees
+/app/donnees
+/storage/*
+/vendor/*
+.idea/
+.env
+
+# OS generated files #
+######################
+.DS_Store
+Thumbs.db
