@@ -4,7 +4,7 @@ services:
   ### PHP-FPM ##############################################
   php-fpm:
     hostname: ${DOCKER_PROJECT_NAME}_php-fpm
-    image: registry.webcd.fr/siligon-valley/docker/php-fpm-library:7.3
+    image: php:7.3-fpm
     extra_hosts:
       - "gitlab.webcd.fr:172.16.0.66"
     volumes:
@@ -16,7 +16,7 @@ services:
 
   ### Apache Server ########################################
   # apache:
-  #   image: registry.webcd.fr/siligon-valley/docker/apache:2.4
+  #   image: httpd:2.4
   #   volumes:
   #     - ./:/var/www
   #   environment:
@@ -30,10 +30,10 @@ services:
 
   ### Ngnix Server ########################################
   nginx:
-    image: registry.webcd.fr/siligon-valley/docker/nginx:1.10.3-public
+    image: nginx:1.17.6
     volumes:
       - ./:/var/www
-     # - .cloud/docker/nginx/default:/etc/nginx/sites-available/default
+      - .cloud/docker/nginx/default:/etc/nginx/sites-available/default
     environment:
       - VIRTUAL_HOST=${DOCKER_PROJECT_NAME}.localhost
     depends_on:
@@ -45,15 +45,12 @@ services:
   ### MariaDB ##############################################
   db:
     hostname: ${DB_HOST}
-    image: mariadb:10.1.38
+    image: mariadb:10.4.11
     env_file: .env
     volumes:
       - mysql-data:/var/lib/mysql
       - .cloud/docker/mysql-init:/docker-entrypoint-initdb.d
     environment:
-      #- MYSQL_DATABASE=${DB_COMMON_DATABASE
-      #- MYSQL_USER=${DB_COMMON_USERNAME}
-      #- MYSQL_PASSWORD=${DB_COMMON_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${DOCKER_DB_ROOT_PASSWORD}
     networks:
       - default
