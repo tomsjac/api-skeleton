@@ -1,7 +1,5 @@
 # User specific & automatically generated files #
 #################################################
-/donnees
-/app/donnees
 /storage/*
 /vendor/*
 .idea/

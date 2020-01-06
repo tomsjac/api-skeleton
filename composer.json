@@ -35,7 +35,7 @@
   "scripts": {
       "test": "phpunit --colors=always",
       "init-dotenv-local": [
-          "php -r \"file_exists('.env') || copy('.env.local', '.env');\"",
+          "@php -r \"file_exists('.env') || copy('.env.local', '.env');\"",
           "sed -i 's/\r$//' .env",
           "sed -i 's/\r$//' .cloud/docker/mysql-init/create_dev.sh"
       ],
@@ -43,12 +43,12 @@
           "@php -r \"mkdir('storage', 0777, true);chmod('storage', 0777);\""
       ],
       "post-install-testing": [
-          "/opt/phpfarm/inst/php-7-3-latest/bin/php -r \"file_exists('.env') || copy('.env.testing', '.env');\"",
-          "/opt/phpfarm/inst/php-7-3-latest/bin/php bin/phinx migrate"
+          "@php -r \"file_exists('.env') || copy('.env.testing', '.env');\"",
+          "@php bin/phinx migrate"
       ],
       "post-install-prod": [
-          "/opt/phpfarm/inst/php-7-3-latest/bin/php -r \"file_exists('.env') || copy('.env.production', '.env');\"",
-          "/opt/phpfarm/inst/php-7-3-latest/bin/php bin/phinx migrate"
+          "@php -r \"file_exists('.env') || copy('.env.production', '.env');\"",
+          "@php bin/phinx migrate"
       ]
   },
   "minimum-stability": "stable"
